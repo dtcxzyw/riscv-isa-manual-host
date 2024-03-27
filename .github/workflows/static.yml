@@ -54,11 +54,13 @@ jobs:
         run: |
           docker run --rm -v ${{ github.workspace }}:/build riscvintl/riscv-docs-base-container-image:latest \
           /bin/sh -c 'cd ./build && make'
+        working-directory: riscv-isa-manual
+        
       - name: Copy artifacts
         run: |
           mkdir -p latest-build
-          cp priv-isa-asciidoc-${{ env.SHORT_SHA }}.html latest-build/priv-isa-asciidoc.html
-          cp unpriv-isa-asciidoc-${{ env.SHORT_SHA }}.html latest-build/unpriv-isa-asciidoc.html
+          cp riscv-isa-manual/priv-isa-asciidoc-${{ env.SHORT_SHA }}.html latest-build/priv-isa-asciidoc.html
+          cp riscv-isa-manual/unpriv-isa-asciidoc-${{ env.SHORT_SHA }}.html latest-build/unpriv-isa-asciidoc.html
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
