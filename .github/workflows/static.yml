@@ -1,0 +1,71 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  schedule:
+  - cron: "0 0 * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Checkout riscv/riscv-isa-manual
+        uses: actions/checkout@v4
+        with:
+          repository: riscv/riscv-isa-manual
+          path: riscv-isa-manual
+          # Pull the latest RISC-V Docs container image
+
+      # Set the short SHA for use in artifact names
+      - name: Set short SHA
+        run: echo "SHORT_SHA=$(git -C riscv-isa-manual rev-parse --short HEAD)" >> $GITHUB_ENV
+        
+      # Get the current date
+      - name: Get current date
+        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+    
+      # https://github.com/riscv/riscv-docs-base-container-image
+      # https://hub.docker.com/r/riscvintl/riscv-docs-base-container-image
+      - name: Pull Container
+        id: pull_container_image
+        run: |
+          docker pull riscvintl/riscv-docs-base-container-image:latest
+
+      # Build PDF and HTML files using the container
+      - name: Build Files
+        id: build_files
+        if: steps.pull_container_image.outcome == 'success'
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/build riscvintl/riscv-docs-base-container-image:latest \
+          /bin/sh -c 'cd ./build && make'
+      - name: Copy artifacts
+        run: |
+          mkdir -p latest-build
+          cp priv-isa-asciidoc-${{ env.SHORT_SHA }}.html latest-build/priv-isa-asciidoc.html
+          cp unpriv-isa-asciidoc-${{ env.SHORT_SHA }}.html latest-build/unpriv-isa-asciidoc.html
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: 'latest-build'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
