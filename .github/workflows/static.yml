@@ -53,7 +53,7 @@ jobs:
         if: steps.pull_container_image.outcome == 'success'
         run: |
           docker run --rm -v ${{ github.workspace }}/riscv-isa-manual:/build riscvintl/riscv-docs-base-container-image:latest \
-          /bin/sh -c 'cd ./build && make priv-html unpriv-html'
+          /bin/sh -c 'export LANG=C.utf8; cd ./build && make priv-html unpriv-html'
         working-directory: riscv-isa-manual
         
       - name: Copy artifacts
