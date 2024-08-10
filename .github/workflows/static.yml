@@ -25,40 +25,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Checkout riscv/riscv-isa-manual
-        uses: actions/checkout@v4
-        with:
-          repository: riscv/riscv-isa-manual
-          path: riscv-isa-manual
-          submodules: recursive
 
-      # Set the short SHA for use in artifact names
-      - name: Set short SHA
-        run: echo "SHORT_SHA=$(git -C riscv-isa-manual rev-parse --short HEAD)" >> $GITHUB_ENV
-        
-      # Get the current date
-      - name: Get current date
-        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-  
-      # Pull the latest RISC-V Docs container image
-      # https://github.com/riscv/riscv-docs-base-container-image
-      # https://hub.docker.com/r/riscvintl/riscv-docs-base-container-image
-      - name: Pull Container
-        id: pull_container_image
-        run: docker pull riscvintl/riscv-docs-base-container-image:latest
-
-      # Build PDF and HTML files using the container
-      - name: Build Files
-        id: build_files
-        if: steps.pull_container_image.outcome == 'success'
-        run: make -j2
-        working-directory: riscv-isa-manual
-        
       - name: Copy artifacts
         run: |
           mkdir -p latest-build
-          cp riscv-isa-manual/build/priv-isa-asciidoc.html latest-build/
-          cp riscv-isa-manual/build/unpriv-isa-asciidoc.html latest-build/
+          cd latest-build
+          wget https://github.com/riscv/riscv-isa-manual/releases/latest/download/riscv-privileged.html -o priv-isa-asciidoc.html
+          wget https://github.com/riscv/riscv-isa-manual/releases/latest/download/riscv-unprivileged.html -o unpriv-isa-asciidoc.html
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
