@@ -51,9 +51,7 @@ jobs:
       - name: Build Files
         id: build_files
         if: steps.pull_container_image.outcome == 'success'
-        run: |
-          docker run --rm -v ${{ github.workspace }}/riscv-isa-manual:/build riscvintl/riscv-docs-base-container-image:latest \
-          /bin/bash -c "make -j$(nproc) build-html"
+        run: make -j2 build-html
         working-directory: riscv-isa-manual
         
       - name: Copy artifacts
