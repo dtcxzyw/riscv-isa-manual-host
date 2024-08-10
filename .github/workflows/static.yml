@@ -30,7 +30,7 @@ jobs:
         with:
           repository: riscv/riscv-isa-manual
           path: riscv-isa-manual
-          # Pull the latest RISC-V Docs container image
+          submodules: recursive
 
       # Set the short SHA for use in artifact names
       - name: Set short SHA
@@ -39,13 +39,13 @@ jobs:
       # Get the current date
       - name: Get current date
         run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-    
+  
+      # Pull the latest RISC-V Docs container image
       # https://github.com/riscv/riscv-docs-base-container-image
       # https://hub.docker.com/r/riscvintl/riscv-docs-base-container-image
       - name: Pull Container
         id: pull_container_image
-        run: |
-          docker pull riscvintl/riscv-docs-base-container-image:latest
+        run: docker pull riscvintl/riscv-docs-base-container-image:latest
 
       # Build PDF and HTML files using the container
       - name: Build Files
