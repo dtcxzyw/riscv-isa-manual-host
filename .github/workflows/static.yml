@@ -30,8 +30,8 @@ jobs:
         run: |
           mkdir -p latest-build
           cd latest-build
-          wget https://github.com/riscv/riscv-isa-manual/releases/latest/download/riscv-privileged.html -o priv-isa-asciidoc.html
-          wget https://github.com/riscv/riscv-isa-manual/releases/latest/download/riscv-unprivileged.html -o unpriv-isa-asciidoc.html
+          wget https://github.com/riscv/riscv-isa-manual/releases/latest/download/riscv-privileged.html -O priv-isa-asciidoc.html
+          wget https://github.com/riscv/riscv-isa-manual/releases/latest/download/riscv-unprivileged.html -O unpriv-isa-asciidoc.html
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
