@@ -51,7 +51,7 @@ jobs:
       - name: Build Files
         id: build_files
         if: steps.pull_container_image.outcome == 'success'
-        run: make -j2 build-html
+        run: make -j2
         working-directory: riscv-isa-manual
         
       - name: Copy artifacts
